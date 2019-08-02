@@ -44,7 +44,25 @@ module.exports = (_env, argv) => {
           }, {
             loader: "sass-loader",
           }]
-        }
+        },
+        {
+          test: /\.(png|jpe?g|gif)$/,
+          use: [
+            'file-loader'
+          ]
+        },
+        {
+          test: /\.svg$/,
+          use: [
+            {
+              loader: 'url-loader',
+              options: {
+                limit: 1000000,
+                fallback: 'file-loader',
+              },
+            },
+          ],
+        },
       ]
     },
     output: {
