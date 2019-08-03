@@ -2,11 +2,26 @@ const path = require('path');
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (_env, argv) => {
   const devMode = argv.mode !== 'production';
 
   return {
+    optimization: {
+      minimizer: [
+        new TerserPlugin(),
+        new OptimizeCssAssetsPlugin({
+          assetNameRegExp: /\.css$/g,
+          cssProcessor: require('cssnano'),
+          cssProcessorPluginOptions: {
+            preset: ['default', { discardComments: { removeAll: true } }],
+          },
+          canPrint: true
+        })
+      ],
+    },
     plugins: [
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
