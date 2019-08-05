@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import { render } from 'react-dom';
 import styled from 'styled-components';
 import JustifiedLayout from 'justified-layout';
@@ -86,19 +86,31 @@ const images = [
 ]
 
 const App = () => (
-  <div>
-    <Gallery/>
-    {/* <img src={Test}></img> */}
-    </div>
+  <Gallery/>
 )
 
 const Gallery = () => {
-  const screenWidth = window.innerWidth;
-  const padding = screenWidth < tabletBreakpoint ? 10 : screenWidth < desktopBreakpoint ? 25 : 50
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth)
+
+  const handleResize = useCallback(() => {
+		setScreenWidth(window.innerWidth)
+  }, [])
+  useEffect(() => {
+		window.addEventListener('resize', handleResize)
+		return () => {
+			window.removeEventListener('resize', handleResize)
+		}
+  }, [])
+  
+  const padding = screenWidth < tabletBreakpoint ? 15 : screenWidth < desktopBreakpoint ? 25 : 40
 
   const config = {
     containerPadding: padding,
-    containerWidth: screenWidth
+    containerWidth: screenWidth,
+    boxSpacing: {
+      horizontal: 15,
+      vertical: 15
+  }
   }
 
   const layoutGeometry = JustifiedLayout(images.map(img => img.aspectRatio), config)
