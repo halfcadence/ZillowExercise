@@ -151,6 +151,14 @@ const Gallery = () => {
   const handleOnImageClick = useCallback((index) => {
     setPreviewVisible(true)
     setPreviewImage(index)
+    document.documentElement.style.overflow = 'hidden'
+    document.body.scroll = 'no'
+  }, [])
+  
+  const handleOnClosePreview = useCallback((index) => {
+    setPreviewVisible(false)
+    document.documentElement.style.overflow = 'scroll'
+    document.body.scroll = 'yes'
   }, [])
 
   const goBack = useCallback(() => {
@@ -159,7 +167,7 @@ const Gallery = () => {
   const goForward = useCallback(() => {
     setPreviewImage(Math.min(images.length - 1, previewImage + 1))
   }, [previewImage])
-  
+
   const padding = screenWidth < tabletBreakpoint ? 15 : screenWidth < desktopBreakpoint ? 25 : 40
 
   const config = {
@@ -188,7 +196,7 @@ const Gallery = () => {
     {previewVisible && <Preview
       images={images}
       index={previewImage}
-      closePreview={() => setPreviewVisible(false)}
+      closePreview={handleOnClosePreview}
       goBack={goBack}
       goForward={goForward}
     />}
