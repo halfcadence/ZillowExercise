@@ -86,11 +86,57 @@ const images = [
 ]
 
 const App = () => (
-  <Gallery/>
+  <div>
+    <Gallery/>
+  </div>
 )
+
+const Preview = ({closePreview, image}) => {
+  const handleOnCloseClick = useCallback(() => {
+		closePreview()
+  }, [])
+  return (
+    <StyledPreview>
+      <StyledPreviewImg src={image}/>
+      <CloseButton
+        onClick={handleOnCloseClick} 
+        className="material-icons"
+        >
+        close
+      </CloseButton>
+    </StyledPreview>
+  )
+}
+
+const CloseButton = styled.i`
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  font-size: 24px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 50%;
+`
+const StyledPreviewImg = styled.img`
+  background-color: transparent;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+`
+const StyledPreview = styled.div`
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: transparent;
+`
 
 const Gallery = () => {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth)
+
+  const [previewVisible, setPreviewVisible] = useState(false)
+  const [previewImage, setPreviewImage] = useState(img0)
 
   const handleResize = useCallback(() => {
 		setScreenWidth(window.innerWidth)
@@ -101,7 +147,12 @@ const Gallery = () => {
 			window.removeEventListener('resize', handleResize)
 		}
   }, [])
-  
+
+  const handleOnImageClick = useCallback((index) => {
+    setPreviewVisible(true)
+    setPreviewImage(images[index].src)
+  }, [])
+
   const padding = screenWidth < tabletBreakpoint ? 15 : screenWidth < desktopBreakpoint ? 25 : 40
 
   const config = {
@@ -122,11 +173,12 @@ const Gallery = () => {
         height={layoutGeometry.boxes[index].height}
         top={layoutGeometry.boxes[index].top}
         left={layoutGeometry.boxes[index].left}
-        
         key={index}
+        onClick={() => handleOnImageClick(index)}
         >
       </StyledImg>
     )}
+    {previewVisible && <Preview image={previewImage} closePreview={() => setPreviewVisible(false)}/>}
     </StyledGallery>
 }
 
