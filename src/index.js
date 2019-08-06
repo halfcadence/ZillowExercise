@@ -91,52 +91,52 @@ const App = () => (
   </div>
 )
 
-const Preview = ({closePreview, image}) => {
-  const handleOnCloseClick = useCallback(() => {
+const Preview = ({closePreview, images, index, goBack, goForward}) => {
+  const handleOnCloseClick = useCallback((e) => {
+    e.stopPropagation()
 		closePreview()
   }, [])
+
+  const handleOnBackClick = useCallback((e) => {
+      e.stopPropagation()
+		  goBack()
+  }, [index])
+
+  const handleOnForwardClick = useCallback((e) => {
+    e.stopPropagation()
+		goForward()
+  }, [index])
+
   return (
-    <StyledPreview>
-      <StyledPreviewImg src={image}/>
+    <StyledPreview onClick={handleOnCloseClick}>
+      <StyledPreviewImg onClick={(e) => e.stopPropagation()} src={images[index].src}/>
+      <BackButton
+        onClick={handleOnBackClick} 
+        className="material-icons"
+        >
+        arrow_back
+      </BackButton>
       <CloseButton
         onClick={handleOnCloseClick} 
         className="material-icons"
         >
         close
       </CloseButton>
+      <ForwardButton
+        onClick={handleOnForwardClick} 
+        className="material-icons"
+        >
+        arrow_forward
+      </ForwardButton>
     </StyledPreview>
   )
 }
-
-const CloseButton = styled.i`
-  position: fixed;
-  left: 10px;
-  top: 10px;
-  font-size: 24px;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 10px;
-  border-radius: 50%;
-`
-const StyledPreviewImg = styled.img`
-  background-color: transparent;
-  height: 100%;
-  width: 100%;
-  object-fit: contain;
-`
-const StyledPreview = styled.div`
-  position: fixed;
-  top: 0;
-  height: 100vh;
-  width: 100vw;
-  background-color: transparent;
-`
 
 const Gallery = () => {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth)
 
   const [previewVisible, setPreviewVisible] = useState(false)
-  const [previewImage, setPreviewImage] = useState(img0)
+  const [previewImage, setPreviewImage] = useState(0)
 
   const handleResize = useCallback(() => {
 		setScreenWidth(window.innerWidth)
@@ -150,9 +150,16 @@ const Gallery = () => {
 
   const handleOnImageClick = useCallback((index) => {
     setPreviewVisible(true)
-    setPreviewImage(images[index].src)
+    setPreviewImage(index)
   }, [])
 
+  const goBack = useCallback(() => {
+		setPreviewImage(Math.max(0, previewImage - 1))
+  }, [previewImage])
+  const goForward = useCallback(() => {
+    setPreviewImage(Math.min(images.length - 1, previewImage + 1))
+  }, [previewImage])
+  
   const padding = screenWidth < tabletBreakpoint ? 15 : screenWidth < desktopBreakpoint ? 25 : 40
 
   const config = {
@@ -165,7 +172,7 @@ const Gallery = () => {
   }
 
   const layoutGeometry = JustifiedLayout(images.map(img => img.aspectRatio), config)
-  console.log(layoutGeometry)
+  
   return <StyledGallery height={layoutGeometry.containerHeight}>
     {images.map((img, index) =>
       <StyledImg
@@ -178,9 +185,60 @@ const Gallery = () => {
         >
       </StyledImg>
     )}
-    {previewVisible && <Preview image={previewImage} closePreview={() => setPreviewVisible(false)}/>}
+    {previewVisible && <Preview
+      images={images}
+      index={previewImage}
+      closePreview={() => setPreviewVisible(false)}
+      goBack={goBack}
+      goForward={goForward}
+    />}
     </StyledGallery>
 }
+
+const buttonFontSize = 24;
+const buttonMargin = 15;
+
+const FixedButton = styled.i`
+  position: fixed;
+  font-size: ${buttonFontSize}px;
+  color: white;
+  background-color: rgba(60, 60, 60, 0.7);
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+`
+
+const BackButton = styled(FixedButton)`
+  left: ${buttonMargin}px;
+  top: calc(50% - ${(buttonFontSize + buttonMargin)/2}px);
+`
+
+const ForwardButton = styled(FixedButton)`
+  right: ${buttonMargin}px;
+  top: calc(50% - ${(buttonFontSize + buttonMargin)/2}px);
+`
+
+const CloseButton = styled(FixedButton)`
+  left: ${buttonMargin}px;
+  top: ${buttonMargin}px;
+`
+
+const StyledPreviewImg = styled.img`
+  background-color: transparent;
+  max-height: 100%;
+  max-width: 100%;
+`
+const StyledPreview = styled.div`
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: black;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
 
 const StyledGallery = styled.div`
   height: ${props => props.height}px;
