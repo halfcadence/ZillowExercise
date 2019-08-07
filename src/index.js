@@ -2,19 +2,32 @@ import React, {useEffect, useState, useCallback} from 'react';
 import { render } from 'react-dom';
 import styled from 'styled-components';
 import JustifiedLayout from 'justified-layout';
+import ProgressiveImage from 'react-progressive-image';
 
 import img0 from './assets/0.jpg';
+import img0p from './assets/0p.jpg';
 import img1 from './assets/1.jpg';
+import img1p from './assets/1p.jpg';
 import img2 from './assets/2.jpg';
+import img2p from './assets/2p.jpg';
 import img3 from './assets/3.jpg';
+import img3p from './assets/3p.jpg';
 import img4 from './assets/4.jpg';
+import img4p from './assets/4p.jpg';
 import img5 from './assets/5.jpg';
+import img5p from './assets/5p.jpg';
 import img6 from './assets/6.jpg';
+import img6p from './assets/6p.jpg';
 import img7 from './assets/7.jpg';
+import img7p from './assets/7p.jpg';
 import img8 from './assets/8.jpg';
+import img8p from './assets/8p.jpg';
 import img9 from './assets/9.jpg';
+import img9p from './assets/9p.jpg';
 import img10 from './assets/10.jpg';
+import img10p from './assets/10p.jpg';
 import img11 from './assets/11.jpg';
+import img11p from './assets/11p.jpg';
 
 import './index.scss';
 
@@ -24,62 +37,74 @@ const desktopBreakpoint = 960
 const images = [
   {
     src: img0,
+    preview: img0p,
     aspectRatio: 5268 / 3512,
     caption: "An Image"
   },
   {
     src: img1,
+    preview: img1p,
     aspectRatio: 5004 / 3336,
     caption: "An Image"
   },
   {
     src: img2,
+    preview: img2p,
     aspectRatio: 6000 / 4000,
     caption: "An Image"
   },
   {
     src: img3,
+    preview: img3p,
     aspectRatio: 3264 / 2176,
     caption: "An Image"
   },
 
   {
     src: img4,
+    preview: img4p,
     aspectRatio: 2873 / 1915,
     caption: "An Image"
   },
   {
     src: img5,
+    preview: img5p,
     aspectRatio: 2579 / 1720,
     caption: "An Image"
   },
   {
     src: img6,
+    preview: img6p,
     aspectRatio: 6000 / 4000,
     caption: "An Image"
   },
   {
     src: img7,
+    preview: img7p,
     aspectRatio: 2971 / 1981,
     caption: "An Image"
   },
   {
     src: img8,
+    preview: img8p,
     aspectRatio: 4621 / 3081,
     caption: "An Image"
   },
   {
     src: img9,
+    preview: img9p,
     aspectRatio: 4928 / 3264,
     caption: "An Image"
   },
   {
     src: img10,
+    preview: img10p,
     aspectRatio: 6000 / 4000,
     caption: "An Image"
   },
   {
     src: img11,
+    preview: img11p,
     aspectRatio: 3469 / 2313,
     caption: "An Image"
   }
@@ -149,12 +174,13 @@ const Gallery = () => {
   }, [])
 
   const handleOnImageClick = useCallback((index) => {
+
     setPreviewVisible(true)
     setPreviewImage(index)
     document.documentElement.style.overflow = 'hidden'
     document.body.scroll = 'no'
   }, [])
-  
+
   const handleOnClosePreview = useCallback((index) => {
     setPreviewVisible(false)
     document.documentElement.style.overflow = 'scroll'
@@ -183,15 +209,16 @@ const Gallery = () => {
   
   return <StyledGallery height={layoutGeometry.containerHeight}>
     {images.map((img, index) =>
-      <StyledImg
-        src={img.src}
+    <ProgressiveImage key={index} src={img.src} placeholder={img.preview}>
+    {src => <StyledImg
+        src={src}
         height={layoutGeometry.boxes[index].height}
         top={layoutGeometry.boxes[index].top}
         left={layoutGeometry.boxes[index].left}
-        key={index}
         onClick={() => handleOnImageClick(index)}
         >
-      </StyledImg>
+      </StyledImg>}
+  </ProgressiveImage>
     )}
     {previewVisible && <Preview
       images={images}
